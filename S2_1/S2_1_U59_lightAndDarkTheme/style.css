@@ -1,0 +1,29 @@
+* {
+  box-sizing: border-box;
+}
+
+h1, .container, #controller {
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.container {
+  font-size: 120px;
+  width: 50%;
+}
+
+.icon {
+  padding: 15px;
+}
+
+.dark {
+  background: black;
+  color: #eee; /*淺灰色*/
+}
+
+
+.light {
+  background: #eee; /*淺灰色*/
+  color: #999; /*深灰色*/
+}
