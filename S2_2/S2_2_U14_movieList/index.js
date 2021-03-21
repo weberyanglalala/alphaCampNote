@@ -3,6 +3,8 @@ const INDEX_URL = BASE_URL + '/api/v1/movies/'
 const POSTER_URL = BASE_URL + '/posters/'
 const movies = []
 const dataPanel = document.querySelector('#data-panel')
+const searchForm = document.querySelector('#search-form')
+const searchInput = document.querySelector('#search-input')
 
 // 定義函數：渲染電影清單
 // 為增加函數複用性，以新的參數 data 儲存資料，避免函數回傳值與原本設定變數 movie 耦合改變了原本 movie 的資料
@@ -30,6 +32,7 @@ function renderMovieList (data) {
   })
   dataPanel.innerHTML = rawHTML
 }
+
 // showMovieModal
 function showMovieModal (id) {
   const modalTitle = document.querySelector('#movie-modal-title')
@@ -47,8 +50,8 @@ function showMovieModal (id) {
     modalDescription.innerText = data.description
   })
 }
-// 點擊事件
 
+// 點擊事件
 dataPanel.addEventListener('click', function onPanelClick(event) {
   if (event.target.matches('.btn-show-movie')) {
     console.log(event.target.dataset.id)
@@ -60,4 +63,19 @@ dataPanel.addEventListener('click', function onPanelClick(event) {
 axios.get(INDEX_URL).then((response) => {
   movies.push(...response.data.results)
   renderMovieList(movies)
+})
+
+// 搜尋功能事件
+searchForm.addEventListener('submit', function onSearchFormSubmit(event) {
+  event.preventDefault()
+  console.log(searchInput.value)
+  const keyword = searchInput.value.trim().toLowerCase()
+  let filteredMovies = []
+  filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(keyword)
+  )
+  if (filteredMovies.length === 0) {
+    return alert(`Your Keywords ${keyword}, No movies found.`)
+  }
+  renderMovieList(filteredMovies)
 })
