@@ -24,7 +24,7 @@ function renderMovieList (data) {
         <div class="card-footer">
           <button class="btn btn-primary btn-show-movie" data-toggle="modal"
           data-target="#movie-modal" data-id="${item.id}">More</button>
-          <button class="btn btn-info btn-add-favorite">+</button>
+          <button class="btn btn-info btn-add-favorite" data-id="${item.id}">+</button>
         </div>
       </div>
     </div>
@@ -51,14 +51,27 @@ function showMovieModal (id) {
   })
 }
 
-// 點擊事件
+// 點擊事件 1. More button
+// 點擊事件 2. Add button
 dataPanel.addEventListener('click', function onPanelClick(event) {
   if (event.target.matches('.btn-show-movie')) {
     console.log(event.target.dataset.id)
     showMovieModal(Number(event.target.dataset.id))
+  } else if (event.target.matches('.btn-add-favorite')) {
+    addToFavorite(Number(event.target.dataset.id))
   }
 })
 
+// add to favorite
+function addToFavorite(id) {
+  const list = JSON.parse(localStorage.getItem('favoriteMovies')) || []
+  const movie = movies.find((movie) => movie.id === id)
+  list.push(movie)
+  const jsonString = JSON.stringify(list)
+  console.log('json string', jsonString)
+  console.log('json object', JSON.parse(jsonString))
+  localStorage.setItem('favoriteMovies', jsonString)
+}
 // axios
 axios.get(INDEX_URL).then((response) => {
   movies.push(...response.data.results)
@@ -79,3 +92,10 @@ searchForm.addEventListener('submit', function onSearchFormSubmit(event) {
   }
   renderMovieList(filteredMovies)
 })
+
+// localStorage 設定資料
+// localStorage.setItem('default_language', 'english')
+localStorage.getItem('default_language')
+console.log(localStorage.getItem('default_language'))
+
+//
