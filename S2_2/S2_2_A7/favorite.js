@@ -1,16 +1,9 @@
 const BASE_URL = 'https://lighthouse-user-api.herokuapp.com'
 const INDEX_URL = BASE_URL + '/api/v1/users'
-const userList = []
+const userList = JSON.parse(localStorage.getItem('favoriteUsers'))
 const dataPanel = document.querySelector('#data-panel')
 const searchForm = document.querySelector('#search-form')
 const searchInput = document.querySelector('#search-input')
-
-// get data from api using Axios and create userList
-axios.get(INDEX_URL).then((response) => {
-  userList.push(...response.data.results)
-  console.log(userList)
-  renderUserList(userList)
-})
 
 // clicking event setting
 dataPanel.addEventListener('click', function onPanelClicked(event) {
@@ -18,9 +11,9 @@ dataPanel.addEventListener('click', function onPanelClicked(event) {
     // console.log(event.target)
     // console.log(event.target.dataset.id)
     showUserModal(Number(event.target.dataset.id))
-  } else if (event.target.matches('.btn-add-favorite')) {
-    console.log(event.target.dataset.id)
-    addToFavorite(Number(event.target.dataset.id))
+  } else if (event.target.matches('.btn-remove-favorite')) {
+    //console.log(event.target.dataset.id)
+    removeFromFavorite(Number(event.target.dataset.id))
   }
 })
 
@@ -40,7 +33,7 @@ function renderUserList (data) {
         <div class="card-footer text-right">
          <button class="btn-more-info btn btn-info" data-id="${item.id}" data-toggle="modal"
          data-target="#user-info-modal">more</button>
-          <button class="btn-add-favorite btn btn-primary" data-id="${item.id}">+</button>
+          <button class="btn-remove-favorite btn btn-danger" data-id="${item.id}">X</button>
         </div>
       </div>
     </div>
@@ -48,6 +41,7 @@ function renderUserList (data) {
   })
   dataPanel.innerHTML = rawHTML
 }
+renderUserList(userList)
 
 // function showUserModal
 function showUserModal (id) {
@@ -74,35 +68,18 @@ function showUserModal (id) {
   })
 }
 
-// searchForm
-searchForm.addEventListener('submit', function onSearchFormSubmit(event){
-  event.preventDefault()
-  const keyword = searchInput.value.trim().toLowerCase()
-  let filteredUser = []
-  
-  // filter
-  filteredUser = userList.filter((user) =>
-  user.name.toLowerCase().includes(keyword) || user.surname.toLowerCase().includes(keyword))
-  // 搜尋優化
-  if (filteredUser.length === 0) {
-    return alert(`找不到符合 ${keyword} 的結果，請重新搜尋`)
-  }
-  renderUserList(filteredUser)
-})
+// function removeFromFavorite
 
-// local storage
-// localStorage.setItem('name', 'Weber')
-// localStorage.setItem('surname', 'Yang')
-// localStorage.getItem('name')
-// localStorage.removeItem('name')
-
-// function addToFavorite
-function addToFavorite (id) {
-  const list = JSON.parse(localStorage.getItem('favoriteUsers')) || []
-  const user = userList.find((user) => user.id === id)
-  if (list.some((user) => user.id === id)) {
-    return alert('此人已加入收藏清單')
-  }
-  list.push(user)
-  localStorage.setItem('favoriteUsers',JSON.stringify(list))
+function removeFromFavorite (id) {
+  console.log(id)
+  if (!userList) return
+  // 透過 id, 在 userList 尋找要刪除的 index
+  const userIndex = userList.findIndex((user) => user.id === id)
+  if (userIndex === -1) return
+  // 刪除該用戶
+  userList.splice(userIndex, 1)
+  // 存回 local storage
+  localStorage.setItem('favoriteUsers', JSON.stringify(userList))
+  // 重新生成 dataPanel
+  renderUserList(userList)
 }
