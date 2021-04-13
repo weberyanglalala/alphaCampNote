@@ -19,7 +19,6 @@ dataPanel.addEventListener('click', function onPanelClicked(event) {
     // console.log(event.target.dataset.id)
     showUserModal(Number(event.target.dataset.id))
   } else if (event.target.matches('.btn-add-favorite')) {
-    console.log(event.target.dataset.id)
     addToFavorite(Number(event.target.dataset.id))
   }
 })
@@ -103,5 +102,6 @@ function addToFavorite (id) {
     return alert('此人已加入收藏清單')
   }
   list.push(user)
+  alert(`${user.name} ${user.surname} 已加入最愛清單`)
   localStorage.setItem('favoriteUsers',JSON.stringify(list))
 }
