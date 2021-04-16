@@ -105,3 +105,5 @@ function addToFavorite (id) {
   alert(`${user.name} ${user.surname} 已加入最愛清單`)
   localStorage.setItem('favoriteUsers',JSON.stringify(list))
 }
+
+// pagination 分頁

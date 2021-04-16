@@ -1,7 +1,7 @@
 const BASE_URL = 'https://movie-list.alphacamp.io'
 const INDEX_URL = BASE_URL + '/api/v1/movies/'
 const POSTER_URL = BASE_URL + '/posters/'
-const movies = []
+const movies = JSON.parse(localStorage.getItem('favoriteMovies'))
 const dataPanel = document.querySelector('#data-panel')
 const searchForm = document.querySelector('#search-form')
 const searchInput = document.querySelector('#search-input')
@@ -24,7 +24,7 @@ function renderMovieList (data) {
         <div class="card-footer">
           <button class="btn btn-primary btn-show-movie" data-toggle="modal"
           data-target="#movie-modal" data-id="${item.id}">More</button>
-          <button class="btn btn-info btn-add-favorite" data-id="${item.id}">+</button>
+          <button class="btn btn-danger btn-remove-favorite" data-id="${item.id}">X</button>
         </div>
       </div>
     </div>
@@ -32,7 +32,8 @@ function renderMovieList (data) {
   })
   dataPanel.innerHTML = rawHTML
 }
-
+// render favoriteMovies
+renderMovieList(movies)
 // showMovieModal
 function showMovieModal (id) {
   const modalTitle = document.querySelector('#movie-modal-title')
@@ -55,42 +56,24 @@ function showMovieModal (id) {
 // 點擊事件 2. Add button
 dataPanel.addEventListener('click', function onPanelClick(event) {
   if (event.target.matches('.btn-show-movie')) {
+    console.log(event.target.dataset.id)
     showMovieModal(Number(event.target.dataset.id))
-  } else if (event.target.matches('.btn-add-favorite')) {
-    // console.log(event.target.dataset.id)
-    addToFavorite(Number(event.target.dataset.id))
+  } else if (event.target.matches('.btn-remove-favorite')) {
+    removeFromFavorite(Number(event.target.dataset.id))
   }
 })
 
-// add to favorite
-function addToFavorite(id) {
-  const list = JSON.parse(localStorage.getItem('favoriteMovies')) || []
-  const movie = movies.find(movie => movie.id === id)
-  if (list.some((movie) => movie.id === id)) {
-    return alert(`${movie.title} 已重複加入最愛清單`)
-  }
-  list.push(movie)
-  localStorage.setItem('favoriteMovies',JSON.stringify(list))
-}
-// axios
-axios.get(INDEX_URL).then((response) => {
-  movies.push(...response.data.results)
+
+// 刪除最愛電影
+function removeFromFavorite(id) {
+  if(!movies) return
+  // 找到要刪除電影的 index
+  const movieIndex = movies.findIndex((movie) => movie.id === id)
+  if (movieIndex === -1) return
+  // 刪除該筆電影
+  movies.splice(movieIndex, 1)
+  // 存回 localStorage
+  localStorage.setItem('favoriteMovies', JSON.stringify(movies))
+  // 重新生成畫面
   renderMovieList(movies)
-})
-
-// 搜尋功能事件
-searchForm.addEventListener('submit', function onSearchFormSubmit(event) {
-  event.preventDefault()
-  console.log(searchInput.value)
-  const keyword = searchInput.value.trim().toLowerCase()
-  let filteredMovies = []
-  filteredMovies = movies.filter((movie) =>
-    movie.title.toLowerCase().includes(keyword)
-  )
-  if (filteredMovies.length === 0) {
-    return alert(`Your Keywords ${keyword}, No movies found.`)
-  }
-  renderMovieList(filteredMovies)
-})
-
-// localStorage 設定資料
+}
