@@ -67,7 +67,7 @@ function addToFavorite(id) {
   const list = JSON.parse(localStorage.getItem('favoriteMovies')) || []
   const movie = movies.find(movie => movie.id === id)
   if (list.some((movie) => movie.id === id)) {
-    return alert(`${movie.title} 已重複加入最愛清單`)
+    return alert(`${movie.title} 重複加入最愛清單`)
   }
   list.push(movie)
   localStorage.setItem('favoriteMovies',JSON.stringify(list))
